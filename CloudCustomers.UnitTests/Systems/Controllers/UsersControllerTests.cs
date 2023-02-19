@@ -56,4 +56,28 @@ public class UsersControllerTests
             service => service.GetAllUsers(), 
             Times.Once);
     }
+
+    /// <summary>
+    /// When the get request is successful it should actually return a list of users 
+    /// </summary>
+    [Fact]
+    public async Task Get_OnSuccess_ReturnsListOfUsers()
+    {
+        // Arrange
+        var mockUsersService = new Mock<IUsersService>();
+        mockUsersService
+            .Setup(s => s.GetAllUsers())
+            .ReturnsAsync(new List<User>());
+
+
+        var sut = new UsersController(mockUsersService.Object);
+
+        // Act
+        var result = await sut.Get();
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var objectResult = (OkObjectResult)result;
+        objectResult.Value.Should().BeOfType<List<User>>();
+    }
 }
