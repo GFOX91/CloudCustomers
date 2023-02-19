@@ -22,7 +22,22 @@ public class UsersControllerTests
         var mockUsersService = new Mock<IUsersService>();
         mockUsersService
             .Setup(s => s.GetAllUsers())
-            .ReturnsAsync(new List<User>());
+            .ReturnsAsync(new List<User>()
+            {
+                new()
+                {
+                    Id = 1,
+                    Name = "Jane",
+                    Email = "joe@bloggs.com",
+                    Address = new Address()
+                    {
+                        Street = "123 Fake Street",
+                        City = "New York",
+                        PostCode = "ABC 123",
+                    }
+                }
+
+            });
 
         var sut = new UsersController(mockUsersService.Object); // the sut(System Under Test) 
 
@@ -67,7 +82,22 @@ public class UsersControllerTests
         var mockUsersService = new Mock<IUsersService>();
         mockUsersService
             .Setup(s => s.GetAllUsers())
-            .ReturnsAsync(new List<User>());
+            .ReturnsAsync(new List<User>() 
+            {
+                new()
+                {
+                    Id = 1,
+                    Name = "Jane",
+                    Email = "joe@bloggs.com",
+                    Address = new Address()
+                    {
+                        Street = "123 Fake Street",
+                        City = "New York",
+                        PostCode = "ABC 123",
+                    }
+                }
+            
+            });
 
 
         var sut = new UsersController(mockUsersService.Object);
@@ -85,7 +115,7 @@ public class UsersControllerTests
     /// When the call to the service returns no users we should return a 404 status code
     /// </summary>
     [Fact]
-    public async Task Get_OnNoUsersFound_Returns404()
+    public async Task Get_OnNoUsersFound_Returns400()
     {
         // Arrange
         var mockUsersService = new Mock<IUsersService>();
@@ -101,5 +131,7 @@ public class UsersControllerTests
 
         // Assert
         result.Should().BeOfType<NotFoundResult>();
+        var objectResult = (NotFoundResult)result;
+        objectResult.StatusCode.Should().Be(404);
     }
 }
