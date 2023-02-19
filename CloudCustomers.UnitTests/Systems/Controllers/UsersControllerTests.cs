@@ -1,6 +1,7 @@
 using CloudCustomers.Api.Controllers;
 using CloudCustomers.Api.Models;
 using CloudCustomers.Api.Services;
+using CloudCustomers.UnitTests.Fixtures;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -22,22 +23,7 @@ public class UsersControllerTests
         var mockUsersService = new Mock<IUsersService>();
         mockUsersService
             .Setup(s => s.GetAllUsers())
-            .ReturnsAsync(new List<User>()
-            {
-                new()
-                {
-                    Id = 1,
-                    Name = "Jane",
-                    Email = "joe@bloggs.com",
-                    Address = new Address()
-                    {
-                        Street = "123 Fake Street",
-                        City = "New York",
-                        PostCode = "ABC 123",
-                    }
-                }
-
-            });
+            .ReturnsAsync(UsersFixture.GetTestUsers);
 
         var sut = new UsersController(mockUsersService.Object); // the sut(System Under Test) 
 
@@ -58,7 +44,7 @@ public class UsersControllerTests
         var mockUsersService = new Mock<IUsersService>();
         mockUsersService
             .Setup(s => s.GetAllUsers())
-            .ReturnsAsync(new List<User>());
+            .ReturnsAsync(UsersFixture.GetTestUsers);
 
 
         var sut = new UsersController(mockUsersService.Object);
@@ -82,22 +68,7 @@ public class UsersControllerTests
         var mockUsersService = new Mock<IUsersService>();
         mockUsersService
             .Setup(s => s.GetAllUsers())
-            .ReturnsAsync(new List<User>() 
-            {
-                new()
-                {
-                    Id = 1,
-                    Name = "Jane",
-                    Email = "joe@bloggs.com",
-                    Address = new Address()
-                    {
-                        Street = "123 Fake Street",
-                        City = "New York",
-                        PostCode = "ABC 123",
-                    }
-                }
-            
-            });
+            .ReturnsAsync(UsersFixture.GetTestUsers);
 
 
         var sut = new UsersController(mockUsersService.Object);
