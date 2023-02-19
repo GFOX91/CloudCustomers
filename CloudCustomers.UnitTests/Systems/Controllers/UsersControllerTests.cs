@@ -80,4 +80,26 @@ public class UsersControllerTests
         var objectResult = (OkObjectResult)result;
         objectResult.Value.Should().BeOfType<List<User>>();
     }
+
+    /// <summary>
+    /// When the call to the service returns no users we should return a 404 status code
+    /// </summary>
+    [Fact]
+    public async Task Get_OnNoUsersFound_Returns404()
+    {
+        // Arrange
+        var mockUsersService = new Mock<IUsersService>();
+        mockUsersService
+            .Setup(s => s.GetAllUsers())
+            .ReturnsAsync(new List<User>());
+
+
+        var sut = new UsersController(mockUsersService.Object);
+
+        // Act
+        var result = await sut.Get();
+
+        // Assert
+        result.Should().BeOfType<NotFoundResult>();
+    }
 }
