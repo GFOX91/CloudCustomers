@@ -19,7 +19,16 @@ public class UsersService : IUsersService
     public async Task<List<User>> GetAllUsers()
     {
         var usersResponse = await _httpClient.GetAsync("https://example.conm");
-        return new List<User> { };
+
+        if (usersResponse.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return new List<User> { };
+        }
+        
+        var responseContent = usersResponse.Content;
+        var allUsers = await responseContent.ReadFromJsonAsync<List<User>>();
+        return allUsers.ToList();
+        
     }
 }
 

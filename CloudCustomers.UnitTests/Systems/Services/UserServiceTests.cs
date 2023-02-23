@@ -53,5 +53,22 @@ public class UsersServiceTests
         // Assert
         result.Should().BeOfType<List<User>>();
     }
+
+    [Fact]
+    public async Task GetAllUsers_WhenCalled_ReturnsNotFound()
+    {
+        // Arrange
+        var expectedResponse = UsersFixture.GetTestUsers();
+
+        var handlerMock = MockHttpMessageHandler<User>.SetUpReturn404();
+        var httpClient = new HttpClient(handlerMock.Object);
+        var sut = new UsersService(httpClient);
+
+        // Act
+        var result = await sut.GetAllUsers();
+
+        // Assert
+        result.Count.Should().Be(0);
+    }
 }
 
