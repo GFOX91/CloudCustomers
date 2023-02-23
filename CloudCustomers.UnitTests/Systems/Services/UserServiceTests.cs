@@ -55,11 +55,9 @@ public class UsersServiceTests
     }
 
     [Fact]
-    public async Task GetAllUsers_WhenCalled_ReturnsNotFound()
+    public async Task GetAllUsers_WhenHits404_ReturnsEmptyListOfUsers()
     {
         // Arrange
-        var expectedResponse = UsersFixture.GetTestUsers();
-
         var handlerMock = MockHttpMessageHandler<User>.SetUpReturn404();
         var httpClient = new HttpClient(handlerMock.Object);
         var sut = new UsersService(httpClient);
@@ -69,6 +67,22 @@ public class UsersServiceTests
 
         // Assert
         result.Count.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task GetAllUsers_WhenCalled_ReturnsListOfExpectedSize()
+    {
+        // Arrange
+        var expectedResponse = UsersFixture.GetTestUsers();
+        var handlerMock = MockHttpMessageHandler<User>.SetupBasicGetResourceList(expectedResponse);
+        var httpClient = new HttpClient(handlerMock.Object);
+        var sut = new UsersService(httpClient);
+
+        // Act
+        var result = await sut.GetAllUsers();
+
+        // Assert
+        result.Count.Should().Be(expectedResponse.Count);
     }
 }
 
