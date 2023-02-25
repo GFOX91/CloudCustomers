@@ -1,8 +1,10 @@
+using CloudCustomers.Api.Config;
 using CloudCustomers.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 ConfigureServices(builder.Services);
+ConfigureOptions(builder.Services);
 
 // Add services to the container.
 
@@ -27,6 +29,13 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+void ConfigureOptions(IServiceCollection services)
+{
+    services.Configure<UsersApiOptions>(
+        builder.Configuration.GetSection("UsersApiOptions")
+    );
+}
 
 void ConfigureServices(IServiceCollection services)
 {

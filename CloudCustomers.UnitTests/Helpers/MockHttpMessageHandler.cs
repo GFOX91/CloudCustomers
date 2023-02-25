@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using CloudCustomers.Api.Models;
+using Moq;
 using Moq.Protected;
 using Newtonsoft.Json;
 
@@ -32,7 +33,42 @@ internal static class MockHttpMessageHandler<T>
 
         handlerMock
             .Protected() //Ensure this setup is protected
-            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(),ItExpr.IsAny<CancellationToken>()) 
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync", 
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>()) 
+            .ReturnsAsync(mockResponse);
+
+        return handlerMock;
+    }
+
+    /// <summary>
+    /// Creates the setup we need in order to mock the httpclient when the SendAsync method is ran
+    /// and it returns a HttpResonseMessage where Status Code is Ok it's content is the seriliazed expectedResponse that is passed in  
+    /// </summary>
+    /// <param name="expectedResponse">The content to be returned in the HttpResponseMessage</param>
+    /// <param name="endpoint">string value which will be used to set the request Uri of the HttpRequestMessage used in the setup of the HttpResponse </param>
+    /// <returns>A static Mock where T is System.Net.Http.HttpMessageHandler</returns>
+    internal static Mock<HttpMessageHandler> SetupBasicGetResourceList(List<User> expectedResponse, string endpoint)
+    {
+        // Creation of a response to be returned in our mocked HttpMessageHandler
+        var mockResponse = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+        {
+            Content = new StringContent(JsonConvert.SerializeObject(expectedResponse))
+        };
+
+        // set the content type of the header to be application/json
+        mockResponse.Content.Headers.ContentType =
+            new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+
+        var handlerMock = new Mock<HttpMessageHandler>();
+
+        handlerMock
+            .Protected() //Ensure this setup is protected
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(), 
+                ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(mockResponse);
 
         return handlerMock;
@@ -65,5 +101,7 @@ internal static class MockHttpMessageHandler<T>
 
         return handlerMock;
     }
+
+   
 }
 
